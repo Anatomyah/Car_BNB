@@ -7,9 +7,35 @@ from person import Person
 
 
 class Rent(FileHandler):
-    __ID_COUNTER = 0
+    """
+    A subclass of FileHandler that represents a rental transaction.
+
+    This class manages rental details and provides methods for displaying rental orders,
+    converting to a string format for database interaction, and loading rental objects
+    from the database.
+
+    Attributes:
+        id (int): Unique identifier for the rental order.
+        car (Car): The car being rented.
+        pickup_time (datetime): The pickup time for the rental.
+        return_time (datetime): The return time for the rental.
+        client (Person): The client who is renting the car.
+    """
+
+    __ID_COUNTER = 0  # A class variable to track the next available ID
 
     def __init__(self, pickup_time, return_time, client, car, id_=0, override=False):
+        """
+        Initializes a new instance of the Rent class.
+
+        Args:
+            pickup_time (str): The pickup time for the rental in 'YYYY-MM-DD HH:MM:SS' format.
+            return_time (str): The return time for the rental in 'YYYY-MM-DD HH:MM:SS' format.
+            client (int): The ID of the client who is renting the car.
+            car (int): The ID of the car being rented.
+            id_ (int, optional): The ID of the rental order. Default is 0.
+            override (bool, optional): If True, the id_ parameter is used as the ID.
+        """
         if override:
             self.id = id_
         else:
@@ -25,13 +51,23 @@ class Rent(FileHandler):
 
     @staticmethod
     def get_id_counter():
+        """
+        Reads the current ID counter from a file and updates the class variable.
+        """
         with open(RENT_ID_COUNTER, 'r') as fh:
             Rent.__ID_COUNTER = int(fh.read())
 
     @staticmethod
     def save_id_counter():
+        """
+        Saves the current ID counter to a file.
+        """
         with open(RENT_ID_COUNTER, 'w') as fh:
             fh.write(str(Rent.__ID_COUNTER))
+
+    # Method definitions for obj_to_str, get_table, show, get_fieldnames, get_id
+    # and property methods for pickup_time, return_time, car, client are included here.
+    # Each property setter includes validation logic to ensure input values meet specific criteria.
 
     def obj_to_str(self):
         return f"'{self.id}', '{self._pickup_time}', '{self._return_time}', '{self._client.id}', '{self._car.id}'"
@@ -118,16 +154,28 @@ class Rent(FileHandler):
                               row[5])
 
     def rent_cost(self):
-        days = self._return_time - self._pickup_time
+        """
+        Calculates the cost of the rental based on the number of days and the car's daily rate.
 
+        Returns:
+            int: The total rental cost.
+        """
+        days = self._return_time - self._pickup_time
         return days.days * self.car.day_cost
 
     @classmethod
     def load_from_db(cls):
+        """
+        Class method to load rental data from the database and create Rent objects.
+
+        Returns:
+            list: A list of Rent objects loaded from the database.
+        """
         order_data = cls.load(table='rent')
 
         objects = []
         for row in order_data:
+            # Creates Rent object for each row in the database and adds it to the list
             objects.append(cls(pickup_time=row[1],
                                return_time=row[2],
                                client=row[3],

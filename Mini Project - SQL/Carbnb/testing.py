@@ -7,7 +7,7 @@ from person import Person
 class MyTestCase(unittest.TestCase):
 
     def test_person(self):
-        # create a Person object, make sure in CSV and delete
+        # create a Person object, make sure in DB and delete
         p = Person(id_=123456789, p_name='Test', l_name='Testing', age=20, email='mashu@mashu.com', phone='0501234567')
         if self.assertIsInstance(p, Person, "Person object created successfully"):
             if self.assertTrue(p.save(), "Save Successful"):
@@ -15,7 +15,7 @@ class MyTestCase(unittest.TestCase):
                     self.assertTrue(p.delete(), 'Object deleted from Database.')
 
     def test_car(self):
-        # create a Car object, make sure in CSV and delete
+        # create a Car object, make sure in DB and delete
         p = Person(id_=123456789, p_name='Test', l_name='Testing', age=20, email='mashu@mashu.com', phone='0501234567')
         p.save()
 
@@ -30,7 +30,7 @@ class MyTestCase(unittest.TestCase):
         p.delete()
 
     def test_rent(self):
-        # Create rent object, make sure in CSV and delete
+        # Create rent object, make sure in DB and delete
         p = Person(id_=123456789, p_name='Test', l_name='Testing', age=20, email='mashu@mashu.com', phone='0501234567')
         p.save()
         c = Car(id_=123456789, brand='Test', model='Testing', year=2023,

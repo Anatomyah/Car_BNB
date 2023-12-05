@@ -5,8 +5,38 @@ from person import Person
 
 
 class Car(FileHandler):
+    """
+    A subclass of FileHandler that represents a car and its associated operations.
+
+    This class encapsulates the properties of a car and provides methods to handle
+    car-related data, including displaying details, converting to string for database
+    purposes, and loading car objects from the database.
+
+    Attributes:
+        id (int): Identification number of the car.
+        brand (str): Brand of the car.
+        model (str): Model of the car.
+        year (int): Year of manufacture of the car.
+        engine (int): Engine size of the car.
+        day_cost (int): Daily cost for renting the car.
+        km (int): Total kilometers driven by the car.
+        owner (Person): The owner of the car.
+    """
 
     def __init__(self, id_, brand, model, year, engine, day_cost, km, owner):
+        """
+        Initializes a new instance of the Car class.
+
+        Args:
+            id_ (int): Identification number of the car.
+            brand (str): Brand of the car.
+            model (str): Model of the car.
+            year (int): Year of manufacture of the car.
+            engine (int): Engine size of the car.
+            day_cost (int): Daily cost for renting the car.
+            km (int): Total kilometers driven by the car.
+            owner (int): ID of the owner of the car.
+        """
         self.id = id_
         self.brand = brand
         self.model = model
@@ -17,6 +47,9 @@ class Car(FileHandler):
         self.owner = owner
 
     def show(self):
+        """
+        Displays the details of the car.
+        """
         print(f"\n*** Car Details ***\n"
               f"ID: {self._id}\n"
               f"Brand: {self._brand}\n"
@@ -28,17 +61,48 @@ class Car(FileHandler):
               f"Owner ID: {self._owner.id}")
 
     def obj_to_str(self):
+        """
+              Converts the car object's properties to a string suitable for database storage.
+
+              Returns:
+                  str: A string representation of the car object's properties.
+              """
         return f"'{self._id}', '{self._brand}', '{self._model}', {self._year}, {self._engine}, " \
                f"{self._day_cost}, '{self._km}', '{self._owner.id}'"
 
     def get_table(self):
+        """
+              Returns the table name associated with Car objects for database operations.
+
+              Returns:
+                  str: The table name.
+              """
         return 'cars'
 
     def get_fieldnames(self, fieldnames=False):
+        """
+               Returns the fieldnames for car attributes.
+
+               Args:
+                   fieldnames (bool): Unused parameter in the current implementation.
+
+               Returns:
+                   list: A list of field names for the Car object.
+               """
         return CARS_FIELDNAMES
 
     def get_id(self):
+        """
+               Retrieves the identification number of the car.
+
+               Returns:
+                   int: The ID of the car.
+               """
         return self.id
+
+    # Property methods (id, brand, model, year, engine, day_cost, km, owner)
+    # with their respective setters are included here.
+    # Each setter contains validation logic to ensure that the input values meet specific criteria.
 
     @property
     def id(self):
@@ -134,12 +198,18 @@ class Car(FileHandler):
         self._owner = Person(owner_data[0], owner_data[1], owner_data[2], owner_data[3], owner_data[4],
                              owner_data[5])
 
-    @classmethod
     def load_from_db(cls):
+        """
+        Class method to load car data from the database and create Car objects.
+
+        Returns:
+            list: A list of Car objects loaded from the database.
+        """
         cars_data = cls.load(table='cars')
 
         objects = []
         for row in cars_data:
+            # Creates Car object for each row in the database and adds it to the list
             objects.append(cls(id_=int(row[0]),
                                brand=row[1],
                                model=row[2],

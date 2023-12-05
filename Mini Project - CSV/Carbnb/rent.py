@@ -8,30 +8,44 @@ from person import Person
 
 
 class Rent(FileHandler, ABC):
-    __ID_COUNTER = 0
+    __ID_COUNTER = 0 # Static variable to track the rental order ID
 
     def __init__(self, pickup_time, return_time, client, car):
-        Rent.get_id_counter()
+        """
+              Initializes a new Rent object.
 
-        self.id = Rent.__ID_COUNTER
+              Parameters:
+                  pickup_time (str): The pickup time for the rental.
+                  return_time (str): The return time for the rental.
+                  client (int): The ID of the client renting the car.
+                  car (int): The serial number of the car being rented.
+              """
+        Rent.get_id_counter()  # Retrieving the current ID counter value
+
+        self.id = Rent.__ID_COUNTER  # Setting the rental order ID
         self.pickup_time = pickup_time
         self.return_time = return_time
         self.client = client
         self.car = car
 
-        Rent.__ID_COUNTER += 1
-        Rent.save_id_counter()
+        Rent.__ID_COUNTER += 1  # Incrementing the ID counter
+        Rent.save_id_counter()  # Saving the updated counter to file
+
+    # Static methods for managing the ID counter
 
     @staticmethod
     def get_id_counter():
+        # Code to retrieve the ID counter from file ...
         with open(RENT_ID_COUNTER, 'r') as fh:
             Rent.__ID_COUNTER = int(fh.read())
 
     @staticmethod
     def save_id_counter():
+        # Code to save the ID counter to file ...
         with open(RENT_ID_COUNTER, 'w') as fh:
             fh.write(str(Rent.__ID_COUNTER))
 
+    # Methods for representing the object as a string or a dictionary
     def obj_to_str(self):
         return f"{self.id},{self._pickup_time},{self._return_time},{self._client.id},{self._car.serial}"
 
@@ -40,6 +54,9 @@ class Rent(FileHandler, ABC):
                 'Client': self._client.id, 'Car': self._car.serial}
 
     def show(self):
+        """
+               Displays the details of the rental order.
+               """
         print(f"\n*** Order Details ***\n"
               f"Order ID: {self.id}\n"
               f"Pickup Time: {self._pickup_time}\n"
@@ -48,6 +65,7 @@ class Rent(FileHandler, ABC):
               f"Car: {self._car.serial}")
 
     def get_file_path(self, fieldnames=False):
+        # Code to get the file path for rental data ...
         res = RENT_PATH
 
         if fieldnames:
@@ -56,14 +74,23 @@ class Rent(FileHandler, ABC):
         return res
 
     def get_id(self):
+        """
+        Returns the ID of the rental order.
+
+        Returns:
+            int: The ID of the rental order.
+        """
         return self.id
 
+    # Properties and setters for various attributes like pickup_time, return_time, car, and client
     @property
     def pickup_time(self):
+        # Getter for pickup_time ...
         return self._pickup_time
 
     @pickup_time.setter
     def pickup_time(self, new_val):
+        # Setter for pickup_time with validation ...
         assert not any(x.isalpha() for x in new_val), f"Invalid date. " \
                                                                              f"Date ust be in the YYYY-MM-DD format " \
                                                                              f"cannot contain letters or be under 6 " \
@@ -73,6 +100,7 @@ class Rent(FileHandler, ABC):
 
         self._pickup_time = date_object
 
+    # Similar property and setter definitions for return_time, car, client
     @property
     def return_time(self):
         return self._return_time
@@ -121,12 +149,23 @@ class Rent(FileHandler, ABC):
                               row['Phone'])
 
     def rent_cost(self):
-        days = self._return_time - self._pickup_time
+        """
+               Calculates the cost of the rental.
 
+               Returns:
+                   int: The total cost of the rental.
+               """
+        days = self._return_time - self._pickup_time
         return days.days * self.car.day_cost
 
     @classmethod
     def load_from_csv(cls):
+        """
+            Loads rent objects from a CSV file.
+
+            Returns:
+                list of Rent: A list of rent objects loaded from the file.
+            """
         reader = FileHandler.load(file_path=RENT_PATH)
 
         objects = []
